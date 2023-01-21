@@ -1,0 +1,28 @@
+a. API to load all the group messages in a paginated manner.
+---------------------------------------------------------------
+//STEPS
+//1. initial server setup for client ans user interaction 
+//2. database connection from the server here we can use express js framework and sequelize orm allows for easy interaction with a SQL database
+// configure the connection to the SQL database using the Sequelize library: while putting correct data in place of dbname usernme password etc.
+
+const connectSequele = new Sequelize('database', 'username', 'password', {host: 'localhost', dialect: 'sql'});
+//3. after the db is synced send a request 
+//The GET request to the '/messages/:page' route: for paginating the 
+
+app.get('/messages/:page', (req, res) => {
+  const limit = 10; // Number of messages per page
+  const offset = (req.params.page - 1) * limit;
+  Message.findAndCountAll({
+    include: [{ model: Group }],
+    limit,
+    offset,
+    order: [['timestamp', 'DESC']],
+  }).then((result) => {
+     const messages = result.rows;
+    const total = Math.ceil(result.count / limit);
+    res.json({ messages, totalPages, currentPage: req.params.page });
+  });
+});
+
+//This will load all all the group messages in a paginated manner, where :page is the page number.
+//It also returns the total pages and the current page
